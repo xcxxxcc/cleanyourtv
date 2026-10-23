@@ -2,14 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  lists-and-tools:
+    lists-and-tools:
     name: Lists, tools and docs
     runs-on: ubuntu-latest
     steps:
@@ -44,17 +45,16 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: latest
-        
-      - name: Accept Android SDK licenses
-        run: |
-          yes | sdkmanager --licenses
 
       - name: Install Android SDK packages
+        shell: bash
         run: |
-          sdkmanager "platform-tools"
-          sdkmanager "platforms;android-34"
-          sdkmanager "build-tools;34.0.0"
-    
+          set -e
+          sdkmanager --sdk_root="${ANDROID_HOME}" --licenses
+          sdkmanager --sdk_root="${ANDROID_HOME}" "platform-tools"
+          sdkmanager --sdk_root="${ANDROID_HOME}" "platforms;android-34"
+          sdkmanager --sdk_root="${ANDROID_HOME}" "build-tools;34.0.0"
+
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Unit tests, lint and release build
